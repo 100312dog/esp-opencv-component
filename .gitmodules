@@ -5,4 +5,5 @@
 
 [submodule "OpenCV"]
 	path = opencv
-	url = ../../opencv/opencv.git
+	active = true
+	url = https://github.com/opencv/opencv.git

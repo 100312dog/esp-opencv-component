@@ -1,0 +1,8 @@
+#
+# All the relative URL paths are intended to be GitHub ones
+# For Espressif's public projects please use '../../espressif/proj', not a '../proj'
+#
+
+[submodule "OpenCV"]
+	path = opencv
+	url = ../../opencv/opencv.git

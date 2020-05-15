@@ -3,7 +3,7 @@
 # For Espressif's public projects please use '../../espressif/proj', not a '../proj'
 #
 
-[submodule "OpenCV"]
+[submodule "opencv"]
 	path = opencv
-	active = true
-	url = https://github.com/opencv/opencv.git
+	url = https://github.com/dmitry1945/opencv.git
+	branch = master

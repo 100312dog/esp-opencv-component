@@ -31,13 +31,6 @@
 using namespace std;
 using namespace cv;
 
-extern "C" long int sysconf(int);
-
-long int sysconf(int wtf)
-{
-    return 1;
-}
-
 #include <zlib.h>
 #include "opencv2/core/softfloat.hpp"
 

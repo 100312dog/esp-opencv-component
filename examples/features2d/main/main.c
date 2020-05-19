@@ -102,7 +102,7 @@ void app_main(void)
     esp_err_t err = esp_camera_init(&camera_config);
     if (err != ESP_OK) {
         ESP_LOGE("CAM", "Camera Init Failed");
-        return err;
+        return;
     }
     while(1)
     {

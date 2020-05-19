@@ -1,0 +1,1 @@
+This project shows how to include OpenCV library into the esp-idf.

@@ -4,6 +4,7 @@ cd build
 dir
 cmake \
     -DCMAKE_BUILD_TYPE=Release \
+    -DOPENCV_EXTRA_MODULES_PATH=../opencv_contrib/modules \
     -DCMAKE_INSTALL_PREFIX=../install \
     -DBUILD_TESTS=0 -DBUILD_PERF_TESTS=0 \
     -DBUILD_ZLIB=1 -DWITH_TIFF=1 -DWITH_OPENMP=0 \
@@ -17,6 +18,11 @@ cmake \
     -DCV_CPU_BASELINE_MODE=esp32 \
     CV_DISABLE_OPTIMIZATION=0 -DBUILD_JPEG=1 \
     -DWITH_JPEG=1 -DBUILD_opencv_imgcodecs=1 -DBUILD_opencv_video=1 \
+    -DBUILD_opencv_tracking=1 \
+    -DBUILD_opencv_datasets=0 \
+    -DBUILD_opencv_ximgproc=0 \
+    -DBUILD_opencv_xfeatures2d=0 \
+    -DBUILD_opencv_bgsegm=0 \
     -DBUILD_opencv_videoio=0 -DBUILD_SHARED_LIBS=0 \
     -DBUILD_PACKAGE=1 -DBUILD_opencv_apps=0 ../opencv
 dir

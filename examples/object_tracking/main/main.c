@@ -24,7 +24,30 @@ void test_opencv(void);
 void test2_opencv(void);
 
 
-//WROVER-KIT PIN Map
+//#define CAMERA_MODEL_ESP_EYE 1
+
+#ifdef CAMERA_MODEL_ESP_EYE
+
+#define CAM_PIN_PWDN    32 //power down is not used
+#define CAM_PIN_RESET   -1 //software reset will be performed
+#define CAM_PIN_XCLK    4
+#define CAM_PIN_SIOD    18
+#define CAM_PIN_SIOC    23
+
+#define CAM_PIN_D7      36
+#define CAM_PIN_D6      37
+#define CAM_PIN_D5      38
+#define CAM_PIN_D4      39
+#define CAM_PIN_D3      35
+#define CAM_PIN_D2      14
+#define CAM_PIN_D1      13
+#define CAM_PIN_D0      34
+#define CAM_PIN_VSYNC   5
+#define CAM_PIN_HREF    27
+#define CAM_PIN_PCLK    25
+
+#else // 
+
 #define CAM_PIN_PWDN    32 //power down is not used
 #define CAM_PIN_RESET   -1 //software reset will be performed
 #define CAM_PIN_XCLK    0
@@ -42,6 +65,8 @@ void test2_opencv(void);
 #define CAM_PIN_VSYNC   25
 #define CAM_PIN_HREF    23
 #define CAM_PIN_PCLK    22
+
+#endif //
 
 static camera_config_t camera_config = {
     .pin_pwdn  = CAM_PIN_PWDN,
@@ -110,6 +135,6 @@ void app_main(void)
         
         int64_t fr_end = esp_timer_get_time();
         float fps = 1*1000000/(fr_end - fr_start);
-        ESP_LOGW("OpenCV", "Feature2d decode & compute - %2.2f FPS", fps);
+        ESP_LOGW("OpenCV", "Object tracking - %2.2f FPS", fps);
     }
 }

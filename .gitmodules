@@ -3,14 +3,6 @@
 # For Espressif's public projects please use '../../espressif/proj', not a '../proj'
 #
 
-[submodule "opencv"]
-	path = opencv
-	url = https://github.com/dmitry1945/opencv.git
-	branch = master
-[submodule "opencv_contrib"]
-	path = opencv_contrib
-	url = https://github.com/dmitry1945/opencv_contrib.git
-	branch = master
 [submodule "components/esp32-camera"]
 	path = components/esp32-camera
 	url = https://github.com/espressif/esp32-camera.git

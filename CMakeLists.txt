@@ -10,7 +10,7 @@ idf_component_register(
 
 # Determine compilation flags used for building OpenCV
 # Flags inherited from IDF build system and other IDF components:
-set(idf_include_directories $<TARGET_PROPERTY:idf::opencv,INCLUDE_DIRECTORIES>)
+set(idf_include_directories $<TARGET_PROPERTY:idf::opencvlib,INCLUDE_DIRECTORIES>)
 set(includes "-I$<JOIN:${idf_include_directories}, -I>")
 # IDF is built with -D_GNU_SOURCE, but we don't actually implement all _GNU_SOURCE
 # features. Defining _GNU_SOURCE causes OpenCV to try to use them, which fails.

@@ -29,7 +29,7 @@ set(cxx_flags "${includes} ${extra_defines}")
 
 if(CONFIG_COMPILER_OPTIMIZATION_DEFAULT)
     set(opt_flags -Og -ggdb -mlongcalls ${assert_flags})
-    set(opt_args -DCMAKE_BUILD_TYPE=Debug
+    set(opt_args -DCMAKE_BUILD_TYPE=Debug -mlongcalls
                  -DCMAKE_C_FLAGS_DEBUG=${opt_flags}
                  -DCMAKE_CXX_FLAGS_DEBUG=${opt_flags})
 elseif(CONFIG_COMPILER_OPTIMIZATION_SIZE)
@@ -38,7 +38,7 @@ elseif(CONFIG_COMPILER_OPTIMIZATION_SIZE)
     # (see e.g. opencv/cmake/OpenCVCompilerOptions.cmake).
     # So we redefine the flags for Release instead.
     set(opt_flags "-Os -ggdb -mlongcalls ${assert_flags}")
-    set(opt_args -DCMAKE_BUILD_TYPE=Release
+    set(opt_args -DCMAKE_BUILD_TYPE=Release -mlongcalls
                  -DCMAKE_C_FLAGS_RELEASE=${opt_flags}
                  -DCMAKE_CXX_FLAGS_RELEASE=${opt_flags})
 elseif(COMPILER_OPTIMIZATION_PERF)
@@ -46,12 +46,12 @@ elseif(COMPILER_OPTIMIZATION_PERF)
     # details in https://github.com/jcmvbkbc/gcc-xtensa/issues/14.
     # Compiling at -O3 happens to be okay.
     set(opt_flags "-O3 -ggdb -mlongcalls ${assert_flags}")
-    set(opt_args -DCMAKE_BUILD_TYPE=Release
+    set(opt_args -DCMAKE_BUILD_TYPE=Release -mlongcalls
                  -DCMAKE_C_FLAGS_RELEASE=${opt_flags}
                  -DCMAKE_CXX_FLAGS_RELEASE=${opt_flags})
 elseif(COMPILER_OPTIMIZATION_NONE)
     set(opt_flags "-O0 -ggdb -mlongcalls ${assert_flags}")
-    set(opt_args -DCMAKE_BUILD_TYPE=Debug
+    set(opt_args -DCMAKE_BUILD_TYPE=Debug -mlongcalls
                  -DCMAKE_C_FLAGS_DEBUG=${opt_flags}
                  -DCMAKE_CXX_FLAGS_DEBUG=${opt_flags})
 else()
@@ -112,7 +112,7 @@ ExternalProject_Add(opencv_proj
     USES_TERMINAL_BUILD TRUE
     # Arguments to pass to OpenCV CMake invocation:
     CMAKE_ARGS
-        -DCMAKE_C_FLAGS=${c_flags}
+        -DCMAKE_C_FLAGS=${c_flags} ${opt_args}
         -DCMAKE_CXX_FLAGS=${cxx_flags}
         ${opt_args}
         -DCMAKE_INSTALL_PREFIX=${BINARY_DIR}/install

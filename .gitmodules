@@ -5,11 +5,11 @@
 
 [submodule "opencv"]
 	path = opencv
-	url = https://github.com/dmitry1945/opencv.git
+	url = https://github.com/opencv/opencv.git
 	branch = master
 [submodule "opencv_contrib"]
 	path = opencv_contrib
-	url = https://github.com/dmitry1945/opencv_contrib.git
+	url = https://github.com/opencv/opencv_contrib.git
 	branch = master
 [submodule "components/esp32-camera"]
 	path = components/esp32-camera

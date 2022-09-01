@@ -19,6 +19,9 @@ set(extra_defines -D_DEFAULT_SOURCE)
 # Final flags for C and C++:
 set(c_flags "${includes} ${extra_defines}")
 set(cxx_flags "${includes} ${extra_defines}")
+## These flags for lates GCC to enable -DCV_INT32_T_IS_LONG_INT=ON
+# set(c_flags "${includes} ${extra_defines} -DCV_INT32_T_IS_LONG_INT=ON")
+# set(cxx_flags "${includes} ${extra_defines} -DCV_INT32_T_IS_LONG_INT=ON")
 
 # Calculate flags for optimizations, assertions, debug info:
 #if(COMPILER_OPTIMIZATION_ASSERTIONS_DISABLE)
@@ -26,6 +29,9 @@ set(cxx_flags "${includes} ${extra_defines}")
 #else()
 #    set(assert_flags "-DDEBUG -D_DEBUG")
 #endif()
+
+# set(assert_flags "${assert_flags} -DDEBUG -D_DEBUG -ffunction-sections -fdata-sections")
+set(assert_flags "${assert_flags} -DDEBUG -D_DEBUG -ffunction-sections -fdata-sections")
 
 if(CONFIG_COMPILER_OPTIMIZATION_DEFAULT)
     set(opt_flags -Og -ggdb -mlongcalls ${assert_flags})
@@ -69,25 +75,30 @@ set(BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/opencv-build)
 # List of OpenCV static libraries we expect to see after the build.
 # Obtained manually by looking at ${BINARY_DIR}/install/lib directory.
 # See if we can automate this somehow...
-#set(opencv_libraries
+# set(opencv_libraries
 #        aruco bioinspired calib3d ccalib core features2d flann fuzzy
 #        hfs highgui img_hash imgcodecs imgproc intensity_transform
 #        line_descriptor ml phase_unwrapping photo plot quality rapid
 #        reg rgbd saliency shape stereo stitching structured_light
-#        surface_matching tracking video videostab xphoto)
+#        surface_matching tracking video videostab xphoto objdetect)
 
 set(opencv_libraries
-    calib3d core flann fuzzy features2d
+    calib3d flann fuzzy 
+    objdetect tracking video videostab features2d 
+    surface_matching
+    shape stereo stitching structured_light
+    line_descriptor ml phase_unwrapping photo plot quality rapid
+    imgcodecs imgproc core
 )
 
 set(3rdparty_libraries
     zlib 
-#    libjasper 
-#    libjpeg-turbo 
-#    libpng 
-#    libtiff 
-#    libwebp 
-    )
+    libjasper 
+    libjpeg-turbo 
+    libpng 
+    libtiff 
+    libwebp 
+)
 
 # List of all static libraries to be produced
 set(all_libraries)
@@ -112,7 +123,7 @@ ExternalProject_Add(opencv_proj
     USES_TERMINAL_BUILD TRUE
     # Arguments to pass to OpenCV CMake invocation:
     CMAKE_ARGS
-        -DCMAKE_C_FLAGS=${c_flags} ${opt_args}
+        -DCMAKE_C_FLAGS=${c_flags}
         -DCMAKE_CXX_FLAGS=${cxx_flags}
         ${opt_args}
         -DCMAKE_INSTALL_PREFIX=${BINARY_DIR}/install
@@ -147,6 +158,7 @@ ExternalProject_Add(opencv_proj
         -DBUILD_opencv_bgsegm=0
         -DBUILD_opencv_datasets=0
         -DBUILD_opencv_imgcodecs=1
+        -DBUILD_opencv_objdetect=1
         -DBUILD_opencv_imgproc=1
         -DBUILD_opencv_tracking=1
         -DBUILD_opencv_video=1
@@ -162,4 +174,5 @@ set_target_properties(opencv_interface_lib PROPERTIES INTERFACE_LINK_LIBRARIES "
 add_dependencies(opencv_interface_lib opencv_proj)
 
 # Finally, link the interface library to the component library:
+# target_link_libraries(${COMPONENT_LIB} INTERFACE opencv_interface_lib "${all_libraries}")
 target_link_libraries(${COMPONENT_LIB} INTERFACE opencv_interface_lib)

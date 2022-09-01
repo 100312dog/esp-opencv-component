@@ -47,9 +47,6 @@ long int sysconf(int wtf)
 //     return std::atan2(y, x);
 // }
 
-#include <zlib.h>
-#include "opencv2/core/softfloat.hpp"
-
 extern "C" void init_opencv_features2d();
 extern "C" void test_opencv_features2d(uint8_t* data, int width, int heigth);
 cv::Ptr<cv::ORB> orb_detector;

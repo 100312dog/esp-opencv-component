@@ -13,9 +13,6 @@
 using namespace std;
 using namespace cv;
 
-#include <zlib.h>
-#include "opencv2/core/softfloat.hpp"
-
 extern "C" void cv_init_people_detect();
 extern "C" void cv_people_detect(uint8_t* data, int width, int heigth);
 

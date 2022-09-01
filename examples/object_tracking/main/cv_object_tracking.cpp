@@ -12,14 +12,11 @@
 using namespace std;
 using namespace cv;
 
-#include <zlib.h>
-#include "opencv2/core/softfloat.hpp"
-
 extern "C" void cv_init_object_tracking(int pos_x, int pos_y);
 extern "C" void cv_object_tracking(uint8_t* data, int width, int heigth);
 
 
-cv::Rect2d roi;
+cv::Rect2i roi;
 Ptr<Tracker> tracker;
 cv::Mat last_frame;
 bool track_initialized = false;
@@ -27,7 +24,7 @@ void cv_init_object_tracking(int pos_x, int pos_y)
 {
     tracker = TrackerKCF::create();
 
-    roi = cv::Rect2d(pos_x, pos_y, 30, 30);
+    roi = cv::Rect2i(pos_x, pos_y, 30, 30);
     
 }
 

@@ -27,7 +27,7 @@ void test2_opencv(void);
 
 #ifdef CAMERA_MODEL_ESP_EYE
 
-#define CAM_PIN_PWDN    32 //power down is not used
+#define CAM_PIN_PWDN    -1 //power down is not used
 #define CAM_PIN_RESET   -1 //software reset will be performed
 #define CAM_PIN_XCLK    4
 #define CAM_PIN_SIOD    18

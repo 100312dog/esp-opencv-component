@@ -31,9 +31,6 @@
 using namespace std;
 using namespace cv;
 
-#include <zlib.h>
-#include "opencv2/core/softfloat.hpp"
-
 extern "C" void cv_motion_detection(uint8_t* data, int width, int heigth);
 
 cv::Mat grayscale1, grayscale2;

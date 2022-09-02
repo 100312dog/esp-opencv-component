@@ -14,10 +14,6 @@
 //#include <opencv2/core/version.hpp>
 #include <opencv2/core/utility.hpp>
 
-extern "C" void test_opencv(void);
-extern "C" void test2_opencv(void);
-extern "C" void test3_opencv(void);
-
 #include "opencv2/opencv_modules.hpp"
 
 #include "opencv2/core.hpp"
@@ -68,12 +64,12 @@ void init_opencv_features2d()
 
 void test_opencv_features2d(uint8_t* data, int width, int heigth)
 {
-    printf("Extract 2d features from picture\n");
+    printf("Extract 2d features from picture %ix%i\n", width, heigth);
     cv::Mat rawData( heigth, width, CV_8UC1, (void*)data );
     
 	orb_detector->detect(rawData, mvKeys);
     orb_detector->compute(rawData, mvKeys, mDescriptors);
-    printf("mvKeys.size = %i\n", mvKeys.size());
+    printf("For picture: mvKeys.size = %i\n", mvKeys.size());
     for (int i=0 ; i< mvKeys.size() ; i++)
     {
         printf("mvKeys[%2i] x=%3.2f, y=%3.2f \n", i, mvKeys[i].pt.x, mvKeys[i].pt.y);

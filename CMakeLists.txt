@@ -10,7 +10,7 @@ idf_component_register(
 
 # Determine compilation flags used for building OpenCV
 # Flags inherited from IDF build system and other IDF components:
-set(idf_include_directories $<TARGET_PROPERTY:idf::opencvlib,INCLUDE_DIRECTORIES>)
+set(idf_include_directories $<TARGET_PROPERTY:idf::opencv,INCLUDE_DIRECTORIES>)
 set(includes "-I$<JOIN:${idf_include_directories}, -I>")
 # IDF is built with -D_GNU_SOURCE, but we don't actually implement all _GNU_SOURCE
 # features. Defining _GNU_SOURCE causes OpenCV to try to use them, which fails.
@@ -19,23 +19,25 @@ set(extra_defines -D_DEFAULT_SOURCE)
 # Final flags for C and C++:
 set(c_flags "${includes} ${extra_defines}")
 set(cxx_flags "${includes} ${extra_defines}")
-## These flags for lates GCC to enable -DCV_INT32_T_IS_LONG_INT=ON
-# set(c_flags "${includes} ${extra_defines} -DCV_INT32_T_IS_LONG_INT=ON")
-# set(cxx_flags "${includes} ${extra_defines} -DCV_INT32_T_IS_LONG_INT=ON")
+set(c_flags "${includes} ${extra_defines} -DCV_INT32_T_IS_LONG_INT=ON")
+set(cxx_flags "${includes} ${extra_defines} -DCV_INT32_T_IS_LONG_INT=ON")
+
+set(common_flags "-ggdb  -ffunction-sections -fdata-sections")
 
 # Calculate flags for optimizations, assertions, debug info:
-#if(COMPILER_OPTIMIZATION_ASSERTIONS_DISABLE)
-#    set(assert_flags "-DNDEBUG")
-#else()
-#    set(assert_flags "-DDEBUG -D_DEBUG")
-#endif()
+if(COMPILER_OPTIMIZATION_ASSERTIONS_DISABLE)
+   set(assert_flags "-DNDEBUG")
+else()
+   set(assert_flags "-DDEBUG -D_DEBUG")
+endif()
 
-# set(assert_flags "${assert_flags} -DDEBUG -D_DEBUG -ffunction-sections -fdata-sections")
-set(assert_flags "${assert_flags} -DDEBUG -D_DEBUG -ffunction-sections -fdata-sections")
+if(CONFIG_IDF_TARGET_ARCH_XTENSA)
+    set(assert_flags "${assert_flags} -mlongcalls")
+endif()
 
 if(CONFIG_COMPILER_OPTIMIZATION_DEFAULT)
-    set(opt_flags -Og -ggdb -mlongcalls ${assert_flags})
-    set(opt_args -DCMAKE_BUILD_TYPE=Debug -mlongcalls
+    set(opt_flags "-Og ${common_flags} ${assert_flags}")
+    set(opt_args -DCMAKE_BUILD_TYPE=Debug
                  -DCMAKE_C_FLAGS_DEBUG=${opt_flags}
                  -DCMAKE_CXX_FLAGS_DEBUG=${opt_flags})
 elseif(CONFIG_COMPILER_OPTIMIZATION_SIZE)
@@ -43,21 +45,21 @@ elseif(CONFIG_COMPILER_OPTIMIZATION_SIZE)
     # however OpenCV CMake files only handle Debug and Release
     # (see e.g. opencv/cmake/OpenCVCompilerOptions.cmake).
     # So we redefine the flags for Release instead.
-    set(opt_flags "-Os -ggdb -mlongcalls ${assert_flags}")
-    set(opt_args -DCMAKE_BUILD_TYPE=Release -mlongcalls
+    set(opt_flags "-Os ${common_flags} ${assert_flags}")
+    set(opt_args -DCMAKE_BUILD_TYPE=Release
                  -DCMAKE_C_FLAGS_RELEASE=${opt_flags}
                  -DCMAKE_CXX_FLAGS_RELEASE=${opt_flags})
 elseif(COMPILER_OPTIMIZATION_PERF)
     # Currently OpenCV fails to compile at -O2 level on Xtensa due to a compiler issue,
     # details in https://github.com/jcmvbkbc/gcc-xtensa/issues/14.
     # Compiling at -O3 happens to be okay.
-    set(opt_flags "-O3 -ggdb -mlongcalls ${assert_flags}")
-    set(opt_args -DCMAKE_BUILD_TYPE=Release -mlongcalls
+    set(opt_flags "-O3 ${common_flags} ${assert_flags}")
+    set(opt_args -DCMAKE_BUILD_TYPE=Release
                  -DCMAKE_C_FLAGS_RELEASE=${opt_flags}
                  -DCMAKE_CXX_FLAGS_RELEASE=${opt_flags})
 elseif(COMPILER_OPTIMIZATION_NONE)
-    set(opt_flags "-O0 -ggdb -mlongcalls ${assert_flags}")
-    set(opt_args -DCMAKE_BUILD_TYPE=Debug -mlongcalls
+    set(opt_flags "-O0 ${common_flags} ${assert_flags}")
+    set(opt_args -DCMAKE_BUILD_TYPE=Debug
                  -DCMAKE_C_FLAGS_DEBUG=${opt_flags}
                  -DCMAKE_CXX_FLAGS_DEBUG=${opt_flags})
 else()
@@ -74,14 +76,7 @@ set(BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/opencv-build)
 
 # List of OpenCV static libraries we expect to see after the build.
 # Obtained manually by looking at ${BINARY_DIR}/install/lib directory.
-# See if we can automate this somehow...
-# set(opencv_libraries
-#        aruco bioinspired calib3d ccalib core features2d flann fuzzy
-#        hfs highgui img_hash imgcodecs imgproc intensity_transform
-#        line_descriptor ml phase_unwrapping photo plot quality rapid
-#        reg rgbd saliency shape stereo stitching structured_light
-#        surface_matching tracking video videostab xphoto objdetect)
-
+# In some cases it's important to have right order of libraries here.
 set(opencv_libraries
     calib3d flann fuzzy 
     objdetect tracking video videostab features2d 
@@ -174,5 +169,4 @@ set_target_properties(opencv_interface_lib PROPERTIES INTERFACE_LINK_LIBRARIES "
 add_dependencies(opencv_interface_lib opencv_proj)
 
 # Finally, link the interface library to the component library:
-# target_link_libraries(${COMPONENT_LIB} INTERFACE opencv_interface_lib "${all_libraries}")
 target_link_libraries(${COMPONENT_LIB} INTERFACE opencv_interface_lib)

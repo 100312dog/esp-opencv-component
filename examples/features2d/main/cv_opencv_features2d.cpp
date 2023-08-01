@@ -1,3 +1,8 @@
+/*
+ * SPDX-FileCopyrightText: 2023 Espressif Systems (Shanghai) CO LTD
+ *
+ * SPDX-License-Identifier: CC0-1.0
+ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -7,11 +12,9 @@
 #include <opencv2/core/cuda.hpp>
 #include <opencv2/imgcodecs/legacy/constants_c.h>
 #include <opencv2/core.hpp>
-#include <opencv2/highgui.hpp>
 #include <opencv2/objdetect.hpp>
 #include <opencv2/imgproc.hpp>
 
-//#include <opencv2/core/version.hpp>
 #include <opencv2/core/utility.hpp>
 
 #include "opencv2/opencv_modules.hpp"
@@ -36,12 +39,6 @@ long int sysconf(int wtf)
 {
     return 1;
 }
-
-// float cv::fastAtan2( float y, float x )
-// {
-// //    using namespace cv::hal;
-//     return std::atan2(y, x);
-// }
 
 extern "C" void init_opencv_features2d();
 extern "C" void test_opencv_features2d(uint8_t* data, int width, int heigth);

@@ -17,17 +17,15 @@
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "esp_system.h"
+#include "esp_timer.h"
 
 #include "esp_camera.h"
 
-void test_opencv(void);
-void test2_opencv(void);
+#ifdef CONFIG_CAMERA_MODULE_ESP_EYE
+#define CAMERA_MODULE_NAME "ESP-EYE"
 
-//#define CAMERA_MODEL_ESP_EYE 1
-
-#ifdef CAMERA_MODEL_ESP_EYE
-
-#define CAM_PIN_PWDN    32 //power down is not used
+#define CAM_PIN_PWDN    -1 //power down is not used
 #define CAM_PIN_RESET   -1 //software reset will be performed
 #define CAM_PIN_XCLK    4
 #define CAM_PIN_SIOD    18
@@ -45,7 +43,30 @@ void test2_opencv(void);
 #define CAM_PIN_HREF    27
 #define CAM_PIN_PCLK    25
 
+#elif CONFIG_CAMERA_MODULE_ESP_S3_EYE 
+#define CAMERA_MODULE_NAME "ESP-S3-EYE"
+
+#define CAM_PIN_PWDN    -1 //power down is not used
+#define CAM_PIN_RESET   -1 //software reset will be performed
+#define CAM_PIN_XCLK    15
+#define CAM_PIN_SIOD    4
+#define CAM_PIN_SIOC    5
+
+#define CAM_PIN_D7      16
+#define CAM_PIN_D6      17
+#define CAM_PIN_D5      18
+#define CAM_PIN_D4      12
+#define CAM_PIN_D3      10
+#define CAM_PIN_D2      8
+#define CAM_PIN_D1      9
+#define CAM_PIN_D0       11
+#define CAM_PIN_VSYNC   6
+#define CAM_PIN_HREF    7
+#define CAM_PIN_PCLK    13
+
 #else // 
+
+#define CAMERA_MODULE_NAME "AI-THINKER"
 
 #define CAM_PIN_PWDN    32 //power down is not used
 #define CAM_PIN_RESET   -1 //software reset will be performed
@@ -96,7 +117,11 @@ static camera_config_t camera_config = {
     .frame_size = FRAMESIZE_QVGA,//QQVGA-QXGA Do not use sizes above QVGA when not JPEG
 
     .jpeg_quality = 12, //0-63 lower number means higher quality
-    .fb_count = 1 //if more than one, i2s runs in continuous mode. Use only with JPEG
+    .fb_count = 1, //if more than one, i2s runs in continuous mode. Use only with JPEG
+
+    .fb_location = CAMERA_FB_IN_PSRAM,
+    .grab_mode = CAMERA_GRAB_WHEN_EMPTY,
+
 };
 
 void cv_text_detection(uint8_t* data, int width, int heigth);
@@ -121,10 +146,22 @@ void app_main(void)
 {
     printf("Init\n");
 
+
     esp_err_t err = esp_camera_init(&camera_config);
     if (err != ESP_OK) {
         ESP_LOGE("CAM", "Camera Init Failed");
+        return;
     }
+    sensor_t *s = esp_camera_sensor_get();
+    ESP_LOGI("CAM", "Camera sensor %2.2x %2.2x %4.4x %2.2x", s->id.MIDH, s->id.MIDL, s->id.PID, s->id.VER);
+
+    //initial sensors are flipped vertically and colors are a bit saturated
+    if (s->id.PID == OV3660_PID)
+    {
+        s->set_brightness(s, 1);  //up the brightness just a bit
+        s->set_saturation(s, -2); //lower the saturation
+    }
+
     while(1)
     {
         int64_t fr_start = esp_timer_get_time();

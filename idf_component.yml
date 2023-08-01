@@ -1,0 +1,10 @@
+version: "4.7.0~1"
+description: OpenCV build for esp-idf
+url: https://github.com/espressif/opencv
+repository: https://github.com/espressif/opencv.git
+dependencies:
+  idf: ">=4.4"
+targets:
+  - esp32
+  - esp32s2
+  - esp32s3

@@ -1,3 +1,3 @@
-idf_component_register(SRCS "main.c" "test_opencv.cpp"
+idf_component_register(SRCS "main.c" "cv_opencv_features2d.cpp"
                     INCLUDE_DIRS "."
-                    REQUIRES opencvlib  esp32-camera)
+                    REQUIRES opencv  esp32-camera esp_timer)

@@ -70,7 +70,7 @@ upload_to_component_manager:
     - git apply ../opencv_patch/opencv_contrib.patch
     - cd ..
     - dir
-    - python -m idf_component_manager upload-component --allow-existing --name=opencv --namespace=espressif
+    - compote component upload --namespace espressif --name opencv
     # - compote component pack --name opencv
     - dir
     - cd dist

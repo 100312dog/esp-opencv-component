@@ -32,7 +32,7 @@ else()
 endif()
 
 if(CONFIG_IDF_TARGET_ARCH_XTENSA)
-    set(assert_flags "${assert_flags} -mlongcalls")
+    set(assert_flags "${assert_flags} -mlongcalls -mauto-litpools")
 endif()
 
 if(CONFIG_COMPILER_OPTIMIZATION_DEFAULT)

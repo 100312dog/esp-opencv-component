@@ -1,0 +1,79 @@
+stages:
+  - build
+  - deploy
+
+variables:
+  # System environment
+
+  # Common parameters for the 'make' during CI tests
+  MAKEFLAGS: "-j5 --no-keep-going"
+
+  # GitLab-CI environment
+  TARGET_TEST_ENV_IMAGE: "$CI_DOCKER_REGISTRY/target-test-env-v5.2:1"
+  GET_SOURCES_ATTEMPTS: "10"
+  ARTIFACT_DOWNLOAD_ATTEMPTS: "10"
+  GIT_SUBMODULE_STRATEGY: normal
+  ESP_DOCS_PATH: "$CI_PROJECT_DIR"
+
+.build_template:
+  stage: build
+  tags:
+    - build
+    - internet
+  script:
+    # we have to apply patch here
+    - dir
+    - pwd
+    - cd ..
+    - dir
+    - dir opencvlib
+    - rm -rf opencv
+    - mv opencvlib opencv
+    - dir
+    - cd opencv
+    - pwd
+    - cd opencv
+    - git apply ../opencv_patch/opencv.patch
+    - cd ../opencv_contrib
+    - git apply ../opencv_patch/opencv_contrib.patch
+    - cd ..
+    - ./build_all.sh
+  variables:
+    EXAMPLE_TARGETS: "esp32"
+    TEST_TARGETS: "esp32"
+
+build_idf_latest:
+  extends: .build_template
+  image: espressif/idf:latest
+  variables:
+    EXAMPLE_TARGETS: "esp32 esp32s3"
+    TEST_TARGETS: "esp32 esp32s3"
+    # GNU Make based build system is not supported starting from IDF v5.0
+    SKIP_GNU_MAKE_BUILD: 1
+
+upload_to_component_manager:
+  image: espressif/idf:latest
+  stage: deploy
+  tags:
+    - deploy
+  only:
+    - master
+    # - /^release\/v/
+    # - /^v\d+\.\d+(\.\d+)?($|-)/
+  when: on_success
+  script:
+    - dir
+    - pwd
+    - cd opencv
+    - git apply ../opencv_patch/opencv.patch
+    - cd ../opencv_contrib
+    - git apply ../opencv_patch/opencv_contrib.patch
+    - cd ..
+    - dir
+    - python -m idf_component_manager upload-component --allow-existing --name=opencv --namespace=espressif
+    # - compote component pack --name opencv
+    - dir
+    - cd dist
+    - ls -lh
+    - cd ..
+

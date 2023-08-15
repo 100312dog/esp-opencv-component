@@ -8,3 +8,17 @@ targets:
   - esp32
   - esp32s2
   - esp32s3
+files:
+  exclude:
+    - "opencv/apps/**/*"
+    - "opencv/data/**/*"
+    - "opencv/samples/**/*"
+    - "opencv/doc/**/*"
+    - "opencv_contrib/samples/**/*"
+    - "opencv_contrib/doc/**/*"
+  include:
+    - "opencv/apps/CMakeLists.txt"
+    - "opencv/data/CMakeLists.txt"
+    - "opencv/samples/CMakeLists.txt"
+    - "opencv/doc/CMakeLists.txt"
+  

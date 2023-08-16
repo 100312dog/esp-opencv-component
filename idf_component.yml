@@ -1,4 +1,4 @@
-version: "4.7.0~1"
+version: "4.7.0~2"
 description: OpenCV build for esp-idf
 url: https://github.com/espressif/opencv
 repository: https://github.com/espressif/opencv.git

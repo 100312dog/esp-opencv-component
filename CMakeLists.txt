@@ -88,7 +88,6 @@ set(opencv_libraries
 
 set(3rdparty_libraries
     zlib 
-    libjasper 
     libjpeg-turbo 
     libpng 
     libtiff 

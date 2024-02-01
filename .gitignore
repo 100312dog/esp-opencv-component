@@ -52,3 +52,8 @@ coverage_report/
 
 # VS Code Settings
 .vscode/
+
+
+# IDF component manager
+managed_components
+dependencies.lock

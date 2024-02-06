@@ -14,6 +14,7 @@
 #include <opencv2/core.hpp>
 #include <opencv2/objdetect.hpp>
 #include <opencv2/imgproc.hpp>
+#include <opencv2/imgcodecs.hpp>
 
 #include <opencv2/core/utility.hpp>
 
@@ -57,6 +58,7 @@ void init_opencv_features2d()
     orb_detector->setEdgeThreshold(35);
     orb_detector->setScoreType(cv::ORB::ScoreType::FAST_SCORE);
     orb_detector->setFirstLevel(0);
+
 }
 
 void test_opencv_features2d(uint8_t* data, int width, int heigth)

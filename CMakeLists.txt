@@ -1,3 +1,5 @@
+set(deps esp_rom vfs lwip pthread newlib)
+
 idf_component_register(
                        # We need the dummy source file so that the component
                        # library is not an interface library. This allows to
@@ -6,7 +8,7 @@ idf_component_register(
                        SRCS dummy.c
                        # OpenCV librarires depend on some of the IDF libraries,
                        # add them here:
-                       PRIV_REQUIRES vfs lwip pthread newlib)
+                       PRIV_REQUIRES ${deps})
 
 # Determine compilation flags used for building OpenCV
 # Flags inherited from IDF build system and other IDF components:
@@ -19,7 +21,6 @@ set(extra_defines -D_DEFAULT_SOURCE)
 # Final flags for C and C++:
 set(c_flags "${includes} ${extra_defines}")
 set(cxx_flags "${includes} ${extra_defines}")
-set(c_flags "${includes} ${extra_defines} -DCV_INT32_T_IS_LONG_INT=ON")
 set(cxx_flags "${includes} ${extra_defines} -DCV_INT32_T_IS_LONG_INT=ON")
 
 set(common_flags "-ggdb  -ffunction-sections -fdata-sections")
@@ -88,21 +89,27 @@ set(opencv_libraries
 
 set(3rdparty_libraries
     zlib 
+    libopenjp2
     libjpeg-turbo 
-    libpng 
+    libpng
     libtiff 
     libwebp 
 )
 
 # List of all static libraries to be produced
 set(all_libraries)
+set(all_targets)
 foreach(libname ${opencv_libraries})
     set(lib_path ${BINARY_DIR}/install/lib/libopencv_${libname}.a)
     list(APPEND all_libraries ${lib_path})
+    list(APPEND all_targets opencv_${libname})
+    add_prebuilt_library(opencv_${libname} ${lib_path})
 endforeach()
 foreach(libname ${3rdparty_libraries})
     set(lib_path ${BINARY_DIR}/install/lib/opencv4/3rdparty/lib${libname}.a)
     list(APPEND all_libraries ${lib_path})
+    list(APPEND all_targets opencv_${libname})
+    add_prebuilt_library(opencv_${libname} ${lib_path})
 endforeach()
 
 # Add OpenCV as a subproject.
@@ -159,13 +166,20 @@ ExternalProject_Add(opencv_proj
         -DBUILD_opencv_videoio=0
 )
 
+# Attach header files to the component library:
+set_target_properties(${COMPONENT_LIB} PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${BINARY_DIR}/install/include/opencv4)
+
+# Make sure the subproject is built before the component library:
 add_dependencies(${COMPONENT_LIB} opencv_proj)
 
-# Attach generated libraries and header files to an interface library:
-add_library(opencv_interface_lib INTERFACE)
-set_target_properties(opencv_interface_lib PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${BINARY_DIR}/install/include/opencv4)
-set_target_properties(opencv_interface_lib PROPERTIES INTERFACE_LINK_LIBRARIES "${all_libraries}")
-add_dependencies(opencv_interface_lib opencv_proj)
 
-# Finally, link the interface library to the component library:
-target_link_libraries(${COMPONENT_LIB} INTERFACE opencv_interface_lib)
+foreach(opencv_target ${all_targets})
+    # Attach IDF compoenent dependencies to OpenCV libraries
+    foreach(dep ${deps})
+        target_link_libraries(${opencv_target} INTERFACE idf::${dep})
+    endforeach()
+    # Attach OpenCV libraries to the component library
+    target_link_libraries(${COMPONENT_LIB} INTERFACE ${opencv_target})
+endforeach()
+
+

@@ -34,8 +34,6 @@ variables:
     - pwd
     - cd opencv
     - git apply ../opencv_patch/opencv.patch
-    - cd ../opencv_contrib
-    - git apply ../opencv_patch/opencv_contrib.patch
     - cd ..
     - ./build_all.sh
   variables:
@@ -66,8 +64,6 @@ upload_to_component_manager:
     - pwd
     - cd opencv
     - git apply ../opencv_patch/opencv.patch
-    - cd ../opencv_contrib
-    - git apply ../opencv_patch/opencv_contrib.patch
     - cd ..
     - dir
     - compote component upload --namespace espressif --name opencv

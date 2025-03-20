@@ -5,12 +5,9 @@
 
 [submodule "opencv"]
 	path = opencv
-	url = https://github.com/opencv/opencv.git
+	url = https://github.com/espressif/opencv.git
 	branch = master
 [submodule "opencv_contrib"]
 	path = opencv_contrib
-	url = https://github.com/opencv/opencv_contrib.git
+	url = https://github.com/espressif/opencv_contrib.git
 	branch = master
-[submodule "components/esp32-camera"]
-	path = components/esp32-camera
-	url = https://github.com/espressif/esp32-camera.git

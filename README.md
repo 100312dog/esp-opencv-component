@@ -1,16 +1,23 @@
 # OpenCV library build for esp-idf
 
-This component used to build and include OpenCV library into the esp-idf as a component for esp32, esp32s2 and esp32s3 CPUs.
+This component used to build and include OpenCV library into the esp-idf as a component for esp32, esp32s2, esp32s3 and esp32p4 and esp32s3 CPUs.
 Now the opencv could be build with IDF version >= 4.4. 
 This component was tested with opencv V 4.10.0.
 
 More details about OpenCV can be found [here](https://opencv.org/).
 
+To clone component from the github repository please follow a next command:
+
+```
+git clone https://github.com/espressif/esp-opencv-component.git espressif__opencv
+cd espressif__opencv
+git submodule update --recursive
+```
+
 The project has the following folders:
 
 * opencv - OpenCV source code directory, added as git submodule
 * opencv_contrib - additional modules for OpenCV, added as git submodule
-* opencv_patch - folder with patch files for opencv and opencv_contrib
 * examples - directory with opencv examples running on Esp32-cam board.
 
 ## The examples:

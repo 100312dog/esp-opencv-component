@@ -1,7 +1,7 @@
 version: "4.10.0~2"
 description: OpenCV build for esp-idf
-url: https://github.com/espressif/opencv
-repository: https://github.com/espressif/opencv.git
+url: https://github.com/espressif/esp-opencv-component
+repository: https://github.com/espressif/esp-opencv-component.git
 dependencies:
   idf: ">=4.4"
 targets:

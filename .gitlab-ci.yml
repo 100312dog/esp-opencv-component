@@ -26,15 +26,12 @@ variables:
     - pwd
     - cd ..
     - dir
-    - dir opencvlib
-    - rm -rf opencv
-    - mv opencvlib opencv
+    - rm -rf espressif__opencv
+    - mv esp-opencv-component espressif__opencv
     - dir
-    - cd opencv
+    - cd espressif__opencv
     - pwd
-    - cd opencv
-    - git apply ../opencv_patch/opencv.patch
-    - cd ..
+    - git submodule update --recursive
     - ./build_all.sh
   variables:
     EXAMPLE_TARGETS: "esp32"
@@ -62,9 +59,7 @@ upload_to_component_manager:
   script:
     - dir
     - pwd
-    - cd opencv
-    - git apply ../opencv_patch/opencv.patch
-    - cd ..
+    - git submodule update --recursive
     - dir
     - compote component upload --namespace espressif --name opencv
     # - compote component pack --name opencv

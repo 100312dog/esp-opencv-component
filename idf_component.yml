@@ -1,4 +1,4 @@
-version: "4.10.0~2"
+version: "4.10.0~3"
 description: OpenCV build for esp-idf
 url: https://github.com/espressif/esp-opencv-component
 repository: https://github.com/espressif/esp-opencv-component.git

@@ -50,7 +50,7 @@ elseif(CONFIG_COMPILER_OPTIMIZATION_SIZE)
     set(opt_args -DCMAKE_BUILD_TYPE=Release
                  -DCMAKE_C_FLAGS_RELEASE=${opt_flags}
                  -DCMAKE_CXX_FLAGS_RELEASE=${opt_flags})
-elseif(COMPILER_OPTIMIZATION_PERF)
+elseif(CONFIG_COMPILER_OPTIMIZATION_PERF)
     # Currently OpenCV fails to compile at -O2 level on Xtensa due to a compiler issue,
     # details in https://github.com/jcmvbkbc/gcc-xtensa/issues/14.
     # Compiling at -O3 happens to be okay.
@@ -58,7 +58,7 @@ elseif(COMPILER_OPTIMIZATION_PERF)
     set(opt_args -DCMAKE_BUILD_TYPE=Release
                  -DCMAKE_C_FLAGS_RELEASE=${opt_flags}
                  -DCMAKE_CXX_FLAGS_RELEASE=${opt_flags})
-elseif(COMPILER_OPTIMIZATION_NONE)
+elseif(CONFIG_COMPILER_OPTIMIZATION_NONE)
     set(opt_flags "-O0 ${common_flags} ${assert_flags}")
     set(opt_args -DCMAKE_BUILD_TYPE=Debug
                  -DCMAKE_C_FLAGS_DEBUG=${opt_flags}
@@ -75,26 +75,12 @@ include(ExternalProject)
 # Build OpenCV in this directory:
 set(BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/opencv-build)
 
-# List of OpenCV static libraries we expect to see after the build.
-# Obtained manually by looking at ${BINARY_DIR}/install/lib directory.
-# In some cases it's important to have right order of libraries here.
+
 set(opencv_libraries
-    calib3d flann fuzzy 
-    objdetect tracking video videostab features2d 
-    surface_matching
-    shape stereo stitching structured_light
-    line_descriptor ml phase_unwrapping photo plot quality rapid
-    imgcodecs imgproc core
+    imgproc core
 )
 
-set(3rdparty_libraries
-    zlib 
-    libopenjp2
-    libjpeg-turbo 
-    libpng
-    libtiff 
-    libwebp 
-)
+set(3rdparty_libraries zlib)
 
 # List of all static libraries to be produced
 set(all_libraries)
@@ -108,8 +94,8 @@ endforeach()
 foreach(libname ${3rdparty_libraries})
     set(lib_path ${BINARY_DIR}/install/lib/opencv4/3rdparty/lib${libname}.a)
     list(APPEND all_libraries ${lib_path})
-    list(APPEND all_targets opencv_${libname})
-    add_prebuilt_library(opencv_${libname} ${lib_path})
+    list(APPEND all_targets ${libname})
+    add_prebuilt_library(${libname} ${lib_path})
 endforeach()
 
 # Add OpenCV as a subproject.
@@ -133,37 +119,28 @@ ExternalProject_Add(opencv_proj
         -DPYTHON_DEFAULT_EXECUTABLE=${python}
         -DCV_CPU_BASELINE_MODE=${CONFIG_IDF_TARGET}
         -DCV_DISABLE_OPTIMIZATION=0
-        -DOPENCV_EXTRA_MODULES_PATH=${CMAKE_CURRENT_LIST_DIR}/opencv_contrib/modules
-        -DOPENCV_FORCE_3RDPARTY_BUILD=1
         -DCMAKE_SYSTEM_PROCESSOR=${CONFIG_IDF_TARGET_ARCH}
         -DENABLE_PIC=0
         -DTARGET=${CONFIG_IDF_TARGET}
         -DWITH_ADE=0
-        -DWITH_JPEG=1
+        -DWITH_JPEG=0
+        -DWITH_TIFF=0
+        -DWITH_OPENJPEG=0
+        -DWITH_JPEG=0
+        -DWITH_PNG=0
+        -DWITH_WEBP=0
+        -DWITH_JASPER=0
         -DWITH_OPENCL=0
         -DWITH_OPENEXR=0
         -DWITH_OPENGL=0
         -DWITH_OPENMP=0
-        -DWITH_PNG=1
         -DWITH_PROTOBUF=0
-        -DWITH_TIFF=1
-        -DWITH_WEBP=1
+        -DBUILD_LIST=imgproc,core
         -DBUILD_EXAMPLES=0
-        -DBUILD_PACKAGE=1
         -DBUILD_PERF_TESTS=0
-        -DBUILD_PNG=1
         -DBUILD_SHARED_LIBS=0
         -DBUILD_TESTS=0
-        -DBUILD_ZLIB=1
-        -DBUILD_opencv_apps=0
-        -DBUILD_opencv_bgsegm=0
-        -DBUILD_opencv_datasets=0
-        -DBUILD_opencv_imgcodecs=1
-        -DBUILD_opencv_objdetect=1
-        -DBUILD_opencv_imgproc=1
-        -DBUILD_opencv_tracking=1
-        -DBUILD_opencv_video=1
-        -DBUILD_opencv_videoio=0
+        -DOPENCV_DISABLE_THREAD_SUPPORT=ON
 )
 
 # Attach header files to the component library:
@@ -174,7 +151,7 @@ add_dependencies(${COMPONENT_LIB} opencv_proj)
 
 
 foreach(opencv_target ${all_targets})
-    # Attach IDF compoenent dependencies to OpenCV libraries
+    # Attach IDF component dependencies to OpenCV libraries
     foreach(dep ${deps})
         target_link_libraries(${opencv_target} INTERFACE idf::${dep})
     endforeach()

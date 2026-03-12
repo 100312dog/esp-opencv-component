@@ -4,11 +4,6 @@ url: https://github.com/espressif/esp-opencv-component
 repository: https://github.com/espressif/esp-opencv-component.git
 dependencies:
   idf: ">=4.4"
-targets:
-  - esp32
-  - esp32s2
-  - esp32s3
-  - esp32p4
 files:
   exclude:
     - "opencv/apps/**/*"
